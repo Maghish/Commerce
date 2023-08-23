@@ -1,0 +1,109 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+      {% if alert %}
+            {% if alert == 1 %}
+                  <div class="alert alert-success" role="alert">
+                        Your Bid was successfully updated.
+                  </div>
+            {% elif alert == 2 %}
+                  <div class="alert alert-danger" role="alert">
+                        Your Bid must be higher than the current bid!
+                  </div>
+            {% else %}
+                  {% if user == listing.owner %}
+                        <div class="alert alert-success" role="alert">
+                              Your Auction has been closed, and the winner was {{ winning_bid.bid_user }} with ${{ winning_bid.bid }} as the highest bid. 
+                        </div>
+                  {% elif user == winning_bid.bid_user %}
+                        <div class="alert alert-success" role="alert">
+                              Congratulations for successfully winning the bid with ${{ winning_bid.bid }} as the highest bid.
+                        </div>
+                  {% endif %}
+            {% endif %}    
+          
+      {% endif %}
+      <div>
+            <h2>Listing: {{ listing.title }}</h2>
+            {% if user.is_authenticated %}
+                  {% if in_watchlist == True %}
+                        <div class="row" style="margin-left: 5px;">
+                              <form action="{% url 'remove_watchlist' listing_id=listing.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="submit" role="button" class="btn btn-danger" style="margin-bottom: 10px;" value="- Remove from Watchlist">
+                              </form>
+                              {% if user == listing.owner %}
+                                    {% if listing.is_active %}
+                                          <a href="{% url 'edit_listing' listing_id=listing.id %}"><button class="btn btn-primary" style="margin-left: 10px;">Edit Listing</button></a>
+                                          <a href="{% url 'close_listing' listing_id=listing.id %}"><button class="btn btn-danger" style="margin-left: 10px;">Close Listing</button></a>
+                                    {% endif %}
+                              {% endif %}
+                              
+                        </div>
+                  {% elif in_watchlist == False %}
+                        <div class="row" style="margin-left: 5px;">
+                              <form action="{% url 'add_watchlist' listing_id=listing.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="submit" role="button" class="btn btn-primary" style="margin-bottom: 10px;" value="+ Add to Watchlist">
+                              </form>
+                              {% if user == listing.owner %}
+                                    {% if listing.is_active %}
+                                          <a href="{% url 'edit_listing' listing_id=listing.id %}"><button class="btn btn-primary" style="margin-left: 10px;">Edit Listing</button></a>
+                                          <a href="{% url 'close_listing' listing_id=listing.id %}"><button class="btn btn-danger" style="margin-left: 10px;">Close Listing</button></a>
+                                    {% endif %}
+                              {% endif %}
+                        </div>
+                  {% endif %}
+
+                  
+            {% endif %}
+      </div>
+      
+      <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="width: 500px; height: 500px;">
+      <hr>
+      <p style="font-size: larger;">{{ listing.description }}</p>
+      <h3>${{ listing.current_bid }}</h3>
+      <p>{{ bids_now }} bid(s) so far.</p>
+      {% if user.is_authenticated %}
+            {% if listing.owner != user %}
+                  {% if listing.is_active %}
+                        <div class="form-group">
+                              <form action="{% url 'bid' listing_id=listing.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                          <input class="form-control" type="number" value="{{ listing.current_bid }}" name="bid_value" step="0.01">
+                                          <input class="btn btn-success" type="submit" value="Place Bid" style="margin-top: 15px;">
+                                    </div>      
+                              </form>
+                        </div>    
+                  {% endif %}
+            {% endif %}
+      {% endif %}              
+
+
+
+
+      <h3 style="font-weight: 400; margin-top: 20px;">Details:</h3>
+      <ul>
+            <li>Listed by: {{ listing.owner }}</li>
+            <li>Category: {{ listing.category }}</li>
+            <li>Created at: {{ listing.time }}</li>
+      </ul>
+      <h3>Comments</h3>
+      <ul class="list-group">
+            {% for comment in comments %}
+                  <li class="list-group-item" style="margin-bottom: 10px;"><p style="margin-bottom: 5px;">{{ comment.comment_content }}</p><p style="font-size: x-small;">{{ comment.comment_author }} - {{ comment.comment_time }}</p></li>
+            {% endfor %}
+      </ul>
+      <hr style="margin-bottom: 50px;">
+      <form action="{% url 'comment' listing_id=listing.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                  <textarea class="form-control" style="height: 200px;" placeholder="Write a comment" name="comment_content"></textarea>
+            </div>
+            <div class="form-group">
+                  <button type="submit" class="btn btn-primary">Send</button>
+            </div>
+      </form>
+
+{% endblock %}

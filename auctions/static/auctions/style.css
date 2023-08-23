@@ -1,0 +1,45 @@
+body {
+      padding: 10px;
+  }
+
+#form-textarea {
+      padding-left: 10px;
+      height: 250px;
+      width: 100%;
+  }
+  
+#form-button {
+      padding: 2px;
+      border: none;
+      border-radius: 5px;
+      height: 40px;
+      width: 70px;
+      background-color: rgba(52, 52, 241, 0.879);
+      color: white;
+  }
+  
+#form-button:hover {
+      background-color: rgba(103, 103, 242, 0.879);
+  }
+  
+.listing-div {
+      width: 10px;
+  }
+
+.category-button-view {
+  background-color: white;
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgb(177, 193, 249);
+  width: 200px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.category-button-view:hover {
+  background-color: rgb(67, 106, 245);
+  border-color: rgb(67, 106, 245);
+  color: white;
+  transition: 200ms;
+
+}
